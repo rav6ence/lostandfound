@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('statuses', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['hilang', 'ditemukan']);
+            $table->enum('status', ['Dilaporkan', 'Dalam Pencarian', 'Ditemukan', 'Selesai']);
             $table->timestamps();
         });
     }

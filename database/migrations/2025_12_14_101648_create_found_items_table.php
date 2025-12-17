@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('nama_barang');
             $table->foreignId('category_id');
             $table->foreignId('location_id');
-            $table->text('deskripsi');
             $table->date('tanggal_ditemukan');
+            $table->text('deskripsi');
             $table->string('kontak');
             $table->timestamps();
         });

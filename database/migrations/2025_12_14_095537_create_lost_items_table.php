@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('lost_items', function (Blueprint $table) {
             $table->id();
             $table->string('nama_barang');
-            $table->string('kategori');
+            $table->string('category_id');
+            $table->string('location_id');
+            $table->string('status_id');
+            $table->date('tanggal_hilang');
             $table->text('deskripsi');
-            $table->string('lokasi');
-            $table->date('tanggal');
             $table->string('kontak');
             $table->timestamps();
         });
