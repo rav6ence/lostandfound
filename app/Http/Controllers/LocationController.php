@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Location;
 
 class LocationController extends Controller
 {
@@ -12,7 +13,8 @@ class LocationController extends Controller
      */
     public function index()
     {
-        //
+        $locations = Location::all();
+        return view('locations.index', compact('locations'));
     }
 
     /**
@@ -20,7 +22,7 @@ class LocationController extends Controller
      */
     public function create()
     {
-        //
+        return view('locations.create');
     }
 
     /**
@@ -28,7 +30,17 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama_lokasi' => 'required|string|max:255'
+        ]);
+
+        Location::create([
+            'nama_lokasi' => $request->nama_lokasi
+        ]);
+
+        return redirect()
+            ->route('locations.index')
+            ->with('success', 'Lokasi berhasil ditambahkan');
     }
 
     /**
@@ -36,7 +48,7 @@ class LocationController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
@@ -44,7 +56,15 @@ class LocationController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $location = Location::find($id);
+
+        if (!$location) {
+            return redirect()
+                ->route('locations.index')
+                ->with('error', 'Data lokasi tidak ditemukan');
+        }
+
+        return view('locations.edit', compact('location'));
     }
 
     /**
@@ -52,7 +72,25 @@ class LocationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $location = Location::find($id);
+
+        if (!$location) {
+            return redirect()
+                ->route('locations.index')
+                ->with('error', 'Data lokasi tidak ditemukan');
+        }
+
+        $request->validate([
+            'nama_lokasi' => 'required|string|max:255'
+        ]);
+
+        $location->update([
+            'nama_lokasi' => $request->nama_lokasi
+        ]);
+
+        return redirect()
+            ->route('locations.index')
+            ->with('success', 'Lokasi berhasil diperbarui');
     }
 
     /**
@@ -60,6 +98,18 @@ class LocationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $location = Location::find($id);
+
+        if (!$location) {
+            return redirect()
+                ->route('locations.index')
+                ->with('error', 'Data lokasi tidak ditemukan');
+        }
+
+        $location->delete();
+
+        return redirect()
+            ->route('locations.index')
+            ->with('success', 'Lokasi berhasil dihapus');
     }
 }

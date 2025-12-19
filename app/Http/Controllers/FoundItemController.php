@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\FoundItem;
+use App\Models\Location;
 
 class FoundItemController extends Controller
 {
@@ -12,7 +14,8 @@ class FoundItemController extends Controller
      */
     public function index()
     {
-        //
+        $items = FoundItem::all();
+        return view('found_items.index', compact('items'));
     }
 
     /**
@@ -20,7 +23,8 @@ class FoundItemController extends Controller
      */
     public function create()
     {
-        //
+        $locations = Location::all();
+        return view('found_items.create', compact('locations'));
     }
 
     /**
@@ -28,7 +32,19 @@ class FoundItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama_barang' => 'required',
+            'kategori' => 'required',
+            'lokasi' => 'required',
+            'tanggal_ditemukan' => 'required|date',
+            'kontak' => 'required'
+        ]);
+
+        FoundItem::create($request->all());
+
+        return redirect()
+            ->route('found-items.index')
+            ->with('success', 'Laporan barang ditemukan berhasil ditambahkan');
     }
 
     /**
@@ -36,7 +52,15 @@ class FoundItemController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $item = FoundItem::find($id);
+
+        if (!$item) {
+            return redirect()
+                ->route('found-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
+        return view('found_items.show', compact('item'));
     }
 
     /**
@@ -44,7 +68,16 @@ class FoundItemController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $item = FoundItem::find($id);
+        $locations = Location::all();
+
+        if (!$item) {
+            return redirect()
+                ->route('found-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
+        return view('found_items.edit', compact('item', 'locations'));
     }
 
     /**
@@ -52,7 +85,27 @@ class FoundItemController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $item = FoundItem::find($id);
+
+        if (!$item) {
+            return redirect()
+                ->route('found-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
+        $request->validate([
+            'nama_barang' => 'required',
+            'kategori' => 'required',
+            'lokasi' => 'required',
+            'tanggal_ditemukan' => 'required|date',
+            'kontak' => 'required'
+        ]);
+
+        $item->update($request->all());
+
+        return redirect()
+            ->route('found-items.index')
+            ->with('success', 'Laporan barang ditemukan berhasil diperbarui');
     }
 
     /**
@@ -60,6 +113,18 @@ class FoundItemController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = FoundItem::find($id);
+
+        if (!$item) {
+            return redirect()
+                ->route('found-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
+        $item->delete();
+
+        return redirect()
+            ->route('found-items.index')
+            ->with('success', 'Laporan barang ditemukan berhasil dihapus');
     }
 }

@@ -45,7 +45,9 @@ class LostItemController extends Controller
 
         LostItem::create($request->all());
 
-        return redirect()->route('lost-items.index');
+        return redirect()
+            ->route('lost-items.index')
+            ->with('success', 'Laporan barang hilang berhasil ditambahkan');
     }
 
     /**
@@ -53,6 +55,14 @@ class LostItemController extends Controller
      */
     public function show(string $id)
     {
+        $item = LostItem::find($id);
+
+        if (!$item) {
+            return redirect()
+                ->route('lost-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
         return view('lost_items.show', compact('lostItem'));
     }
 
@@ -61,7 +71,15 @@ class LostItemController extends Controller
      */
     public function edit(string $id)
     {
+        $item = LostItem::find($id);
         $locations = Location::all();
+
+        if (!$item) {
+            return redirect()
+                ->route('lost-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
         return view('lost_items.edit', compact('lostItem', 'locations'));
     }
 
@@ -70,10 +88,28 @@ class LostItemController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $lostItem = LostItem::findOrFail($id);
-        $lostItem->update($request->all());
+        $item = LostItem::find($id);
 
-        return redirect()->route('lost-items.index');
+        if (!$item) {
+            return redirect()
+                ->route('lost-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
+        $request->validate([
+            'nama_barang' => 'required',
+            'lokasi' => 'required',
+            'kategori' => 'required',
+            'status' => 'required',
+            'tanggal_hilang' => 'required|date',
+            'kontak' => 'required'
+        ]);
+
+        $item->update($request->all());
+
+        return redirect()
+            ->route('lost-items.index')
+            ->with('success', 'Laporan barang hilang berhasil diperbarui');
     }
 
     /**
@@ -81,9 +117,18 @@ class LostItemController extends Controller
      */
     public function destroy(string $id)
     {
-        $lostItem = LostItem::findOrFail($id);
-        $lostItem->delete();
+        $item = LostItem::find($id);
 
-        return redirect()->route('lost-items.index');
+        if (!$item) {
+            return redirect()
+                ->route('lost-items.index')
+                ->with('error', 'Data laporan tidak ditemukan');
+        }
+
+        $item->delete();
+
+        return redirect()
+            ->route('lost-items.index')
+            ->with('success', 'Laporan barang hilang berhasil dihapus');
     }
 }
