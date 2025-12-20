@@ -48,7 +48,15 @@ class LocationController extends Controller
      */
     public function show(string $id)
     {
-        
+        $location = Location::find($id);
+
+        if (!$location) {
+            return redirect()
+                ->route('locations.index')
+                ->with('error', 'Data lokasi tidak ditemukan');
+        }
+
+        return view('locations.show', compact('location'));
     }
 
     /**
