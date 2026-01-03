@@ -8,16 +8,19 @@ class LostItem extends Model
 {
     protected $fillable = [
         'nama_barang',
-        'kategori',
-        'location_id',
-        'status',
         'tanggal_hilang',
+        'kategori',
+        'kontak',
+        'lokasi_terakhir',
         'deskripsi',
-        'kontak'
+        'status_id',
     ];
 
-    public function location()
-    {
-        return $this->belongsTo(Location::class);
-    }
+
+
+
+
+    protected $casts = [
+        'tanggal_hilang' => 'date',
+    ];
 }

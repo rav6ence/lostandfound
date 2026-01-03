@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lost_items', function (Blueprint $table) {
+        Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_barang');
-            $table->string('category_id');
-            $table->string('location_id');
-            $table->string('status_id');
-            $table->date('tanggal_hilang');
-            $table->text('deskripsi');
-            $table->string('kontak');
+            $table->string('nama_lokasi');
             $table->timestamps();
         });
+
     }
 
     /**
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lost_items');
+        Schema::dropIfExists('locations');
     }
 };

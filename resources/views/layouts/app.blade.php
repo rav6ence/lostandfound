@@ -1,23 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Lost and Found</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+    <meta charset="UTF-8">
+    <title>CariU</title>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="/">Lost & Found</a>
-        <div>
-            <a href="{{ route('lost-items.index') }}" class="btn btn-outline-light btn-sm">Barang Hilang</a>
-            <a href="{{ route('found-items.index') }}" class="btn btn-outline-light btn-sm">Barang Ditemukan</a>
-            <a href="{{ route('locations.index') }}" class="btn btn-outline-light btn-sm">Lokasi</a>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" href="/">
+            Welcome To CariU
+        </a>
+
+        <div class="d-flex gap-2">
+            <a href="{{ route('lost-items.index') }}" class="btn btn-outline-light btn-sm">
+                Barang Hilang
+            </a>
+            <a href="{{ route('found-items.index') }}" class="btn btn-outline-light btn-sm">
+                Barang Ditemukan
+            </a>
+            <a href="#" class="btn btn-outline-light btn-sm">
+                Lokasi
+            </a>
         </div>
     </div>
 </nav>
 
-<div class="container">
+<!-- CONTENT -->
+<div class="container-fluid mt-4 px-4">
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -29,5 +41,7 @@
     @yield('content')
 </div>
 
+<!-- BOOTSTRAP JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

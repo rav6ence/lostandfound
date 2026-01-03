@@ -6,26 +6,29 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('found_items', function (Blueprint $table) {
             $table->id();
             $table->string('nama_barang');
-            $table->foreignId('category_id');
-            $table->foreignId('location_id');
+            $table->string('kategori');
+            $table->string('lokasi');
             $table->date('tanggal_ditemukan');
-            $table->text('deskripsi');
+            $table->time('waktu_ditemukan');
+            $table->string('lokasi_penemuan');
+            $table->text('kronologi')->nullable();
+            $table->string('nama_penemu');
+            $table->string('kontak_penemu');
+            $table->string('alamat_penemu');
             $table->string('kontak');
+            $table->text('deskripsi');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
+
+
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('found_items');

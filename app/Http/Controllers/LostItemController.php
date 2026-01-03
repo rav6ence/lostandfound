@@ -3,132 +3,106 @@
 namespace App\Http\Controllers;
 
 use App\Models\LostItem;
-use App\Models\Location;
-
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LostItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $items = LostItem::with('location')->get();
+        $items = LostItem::latest()->get();
         return view('lost_items.index', compact('items'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
-        $locations = Location::all();
-        return view('lost_items.create', compact('locations'));
+        return view('lost_items.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_barang' => 'required',
-            'kategori' => 'required',
-            'location_id' => 'required',
-            'status' => 'required',
-            'tanggal_hilang' => 'required|date',
-            'deskripsi' => 'required',
-            'kontak' => 'required'
+        $data = $request->validate([
+            'nama_barang'      => 'required|string',
+            'tanggal_hilang'   => 'required|date',
+            'kategori'         => 'required|string',
+            'kontak'           => 'required|string',
+            'lokasi_terakhir'  => 'required|string',
+            'deskripsi'        => 'required|string',
+            'gambar'           => 'nullable|image',
         ]);
 
-        LostItem::create($request->all());
+        // STATUS DEFAULT → Dilaporkan (ID = 1)
+        $data['status_id'] = 1;
+
+        // IMAGE (OPTIONAL)
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('lost-items', 'public');
+        }
+
+        LostItem::create($data);
 
         return redirect()
             ->route('lost-items.index')
-            ->with('success', 'Laporan barang hilang berhasil ditambahkan');
+            ->with('success', 'Laporan barang hilang berhasil disimpan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+
+
+
+    public function show($id)
     {
-        $item = LostItem::find($id);
-
-        if (!$item) {
-            return redirect()
-                ->route('lost-items.index')
-                ->with('error', 'Data laporan tidak ditemukan');
-        }
-
-        return view('lost_items.show', compact('lostItem'));
+        $item = LostItem::findOrFail($id);
+        return view('lost_items.show', compact('item'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $item = LostItem::find($id);
-        $locations = Location::all();
-
-        if (!$item) {
-            return redirect()
-                ->route('lost-items.index')
-                ->with('error', 'Data laporan tidak ditemukan');
-        }
-
-        return view('lost_items.edit', compact('lostItem', 'locations'));
+        $item = LostItem::findOrFail($id);
+        return view('lost_items.create', compact('item'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $item = LostItem::find($id);
+        $item = LostItem::findOrFail($id);
 
-        if (!$item) {
-            return redirect()
-                ->route('lost-items.index')
-                ->with('error', 'Data laporan tidak ditemukan');
-        }
-
-        $request->validate([
-            'nama_barang' => 'required',
-            'lokasi' => 'required',
-            'kategori' => 'required',
-            'status' => 'required',
-            'tanggal_hilang' => 'required|date',
-            'kontak' => 'required'
+        $data = $request->validate([
+            'nama_barang'      => 'required',
+            'nama_pemilik'     => 'required',
+            'kategori'         => 'required',
+            'lokasi_terakhir'  => 'required',
+            'tanggal_hilang'   => 'required|date',
+            'kontak'           => 'required',
+            'deskripsi'        => 'required',
+            'image'            => 'nullable|image|max:2048',
+            'status_id'        => 'required',
         ]);
 
-        $item->update($request->all());
+        if ($request->hasFile('image')) {
+            if ($item->image) {
+                Storage::disk('public')->delete($item->image);
+            }
+            $data['image'] = $request->file('image')->store('lost_items', 'public');
+        }
 
-        return redirect()
-            ->route('lost-items.index')
-            ->with('success', 'Laporan barang hilang berhasil diperbarui');
+        $item->update($data);
+
+        return redirect()->route('lost-items.index')
+            ->with('success', 'Data berhasil diubah');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $item = LostItem::find($id);
+        $item = LostItem::findOrFail($id);
 
-        if (!$item) {
-            return redirect()
-                ->route('lost-items.index')
-                ->with('error', 'Data laporan tidak ditemukan');
+        if ($item->image) {
+            Storage::disk('public')->delete($item->image);
         }
 
         $item->delete();
 
-        return redirect()
-            ->route('lost-items.index')
-            ->with('success', 'Laporan barang hilang berhasil dihapus');
+        return redirect()->route('lost-items.index')
+            ->with('success', 'Data berhasil dihapus');
     }
 }
