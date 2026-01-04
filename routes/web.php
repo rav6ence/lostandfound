@@ -12,13 +12,15 @@ Route::get('/', function () {
 
 Route::resource('lost-items', LostItemController::class);
 
-Route::get('/lost-items', [LostItemController::class, 'index'])->name('lost-items.index');
-Route::get('/lost-items/create', [LostItemController::class, 'create'])->name('lost-items.create');
-Route::post('/lost-items', [LostItemController::class, 'store'])->name('lost-items.store');
-Route::get('/lost-items/{id}', [LostItemController::class, 'show'])->name('lost-items.show');
-
-Route::get('/claim/{foundItemId}', [ClaimController::class, 'create'])->name('claim.create');
-Route::post('/claim', [ClaimController::class, 'store'])->name('claim.store');
-
 Route::resource('found-items', FoundItemController::class);
+
 Route::resource('locations', LocationController::class);
+
+// CLAIM — MANUAL CREATE (PAKAI PARAMETER)
+Route::get(
+    '/claim-items/create/{foundItem}',
+    [ClaimController::class, 'create']
+)->name('claim-items.create');
+
+// CLAIM — STORE SAJA VIA RESOURCE
+Route::resource('claim-items', ClaimController::class)->only(['store']);

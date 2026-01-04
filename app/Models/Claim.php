@@ -8,10 +8,11 @@ class Claim extends Model
 {
     protected $fillable = [
         'found_item_id',
-        'nama_pengklaim',
-        'kontak',
-        'alasan',
-        'status'
+        'nama_pemilik',
+        'kontak_pemilik',
+        'lokasi_terakhir',
+        'bukti',
+        'status',
     ];
 
     public function foundItem() {

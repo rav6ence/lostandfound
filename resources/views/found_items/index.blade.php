@@ -3,128 +3,81 @@
 @section('content')
 <div class="container-fluid p-4" style="background:#f5f5f5; min-height:100vh;">
 
-    <h4 class="mb-4">
-        {{ isset($item) ? 'Ubah Barang Ditemukan' : 'Tambah Barang Ditemukan' }}
-    </h4>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Daftar Barang Ditemukan</h4>
 
-    <div class="bg-white p-4 rounded shadow-sm">
-
-        <form method="POST"
-              action="{{ isset($item) ? route('found-items.update', $item->id) : route('found-items.store') }}"
-              enctype="multipart/form-data">
-            @csrf
-            @if(isset($item)) @method('PUT') @endif
-
-            <div class="row">
-                {{-- IMAGE --}}
-                <div class="col-md-4">
-                    <div class="border bg-light mb-2" style="height:250px;">
-                        <img id="imagePreview"
-                             src="{{ isset($item) && $item->image
-                                    ? asset('storage/'.$item->image)
-                                    : 'https://via.placeholder.com/400x250?text=Preview' }}"
-                             class="w-100 h-100"
-                             style="object-fit:cover;">
-                    </div>
-
-                    <input type="file" name="image" id="imageInput" class="form-control mb-2">
-
-                    <button type="button" class="btn btn-outline-secondary w-100" onclick="resetImage()">
-                        Hapus Gambar
-                    </button>
-                </div>
-
-                {{-- FORM --}}
-                <div class="col-md-8">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Nama Barang</label>
-                            <input type="text" name="nama_barang" class="form-control"
-                                   value="{{ $item->nama_barang ?? '' }}" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Tanggal Ditemukan</label>
-                            <input type="date" name="tanggal_ditemukan" class="form-control"
-                                   value="{{ $item->tanggal_ditemukan ?? '' }}" required>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Waktu Ditemukan</label>
-                            <input type="time" name="waktu_ditemukan" class="form-control"
-                                   value="{{ $item->waktu_ditemukan ?? '' }}" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Lokasi Penemuan</label>
-                            <input type="text" name="lokasi_penemuan" class="form-control"
-                                   value="{{ $item->lokasi_penemuan ?? '' }}" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Kronologi Penemuan</label>
-                        <textarea name="kronologi" class="form-control" rows="3">{{ $item->kronologi ?? '' }}</textarea>
-                    </div>
-                </div>
-            </div>
-
-            {{-- DATA PENEMU --}}
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <label class="form-label">Nama Penemu</label>
-                    <input type="text" name="nama_penemu" class="form-control"
-                           value="{{ $item->nama_penemu ?? '' }}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Kontak Penemu</label>
-                    <input type="text" name="kontak_penemu" class="form-control"
-                           value="{{ $item->kontak_penemu ?? '' }}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Alamat Penemu</label>
-                    <input type="text" name="alamat_penemu" class="form-control"
-                           value="{{ $item->alamat_penemu ?? '' }}" required>
-                </div>
-            </div>
-
-            {{-- DESKRIPSI --}}
-            <div class="mt-4">
-                <label class="form-label">Deskripsi Barang</label>
-                <textarea name="deskripsi" class="form-control" rows="4" required>{{ $item->deskripsi ?? '' }}</textarea>
-            </div>
-
-            {{-- BUTTON --}}
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn {{ isset($item) ? 'btn-warning' : 'btn-success' }}">
-                    {{ isset($item) ? 'Ubah' : 'Simpan' }}
-                </button>
-
-                <a href="{{ route('found-items.index') }}" class="btn btn-secondary">
-                    Batal
-                </a>
-            </div>
-
-        </form>
+        <a href="{{ route('found-items.create') }}" class="btn btn-success">
+            + Tambah Barang
+        </a>
     </div>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="bg-white p-3 rounded shadow-sm">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>No</th>
+                    <th width="80">Gambar</th>
+                    <th>Nama Barang</th>
+                    <th>Tanggal</th>
+                    <th>Lokasi</th>
+                    <th>Penemu</th>
+                    <th width="180">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($items as $i => $item)
+                    <tr>
+                        <td>{{ $i + 1 }}</td>
+                        <td>
+                            <img src="{{ $item->image
+                                ? asset('storage/'.$item->image)
+                                : 'https://via.placeholder.com/80' }}"
+                                width="70" height="70" style="object-fit:cover;">
+                        </td>
+                        <td>{{ $item->nama_barang }}</td>
+                        <td>{{ $item->tanggal_ditemukan }}</td>
+                        <td>{{ $item->lokasi_penemuan }}</td>
+                        <td>{{ $item->nama_penemu }}</td>
+                        <td>
+                            <a href="{{ route('found-items.show', $item->id) }}"
+                               class="btn btn-info btn-sm">Detail</a>
+
+                            <a href="{{ route('found-items.edit', $item->id) }}"
+                               class="btn btn-warning btn-sm">Edit</a>
+
+                            <a href="{{ route('claim-items.create', $item->id) }}"
+                                class="btn btn-success btn-sm">
+                                    Claim
+                                </a>
+
+                            <form action="{{ route('found-items.destroy', $item->id) }}"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Hapus data ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger btn-sm">
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Belum ada data barang ditemukan
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
 </div>
-
-<script>
-function resetImage() {
-    document.getElementById('imageInput').value = '';
-    document.getElementById('imagePreview').src =
-        'https://via.placeholder.com/400x250?text=Preview';
-}
-
-document.getElementById('imageInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => document.getElementById('imagePreview').src = e.target.result;
-        reader.readAsDataURL(file);
-    }
-});
-</script>
 @endsection

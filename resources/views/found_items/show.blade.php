@@ -1,34 +1,41 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container-fluid p-4" style="min-height:100vh;">
-    <h4 class="mb-4">Detail Barang Ditemukan</h4>
+@section('title', 'Detail Barang')
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="border rounded mb-3" style="height:260px;">
-                <img src="{{ $item->image ? asset('storage/'.$item->image) : 'https://via.placeholder.com/400x260?text=No+Image' }}"
-                     class="w-100 h-100 rounded" style="object-fit:cover;">
-            </div>
+@section('content')
+<div class="d-flex justify-content-center py-5">
+    <div class="card shadow-sm" style="max-width:450px; width:100%;">
+        <div class="card-header text-center">
+            <h4 class="mb-0">Detail Barang</h4>
         </div>
 
-        <div class="col-md-8">
-            <div class="bg-white rounded shadow-sm">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Nama Barang:</strong> {{ $item->nama_barang }}</li>
-                    <li class="list-group-item"><strong>Tanggal:</strong> {{ $item->tanggal_ditemukan }}</li>
-                    <li class="list-group-item"><strong>Waktu:</strong> {{ $item->waktu_ditemukan }}</li>
-                    <li class="list-group-item"><strong>Lokasi:</strong> {{ $item->lokasi_penemuan }}</li>
-                    <li class="list-group-item"><strong>Penemu:</strong> {{ $item->nama_penemu }}</li>
-                    <li class="list-group-item"><strong>Kontak:</strong> {{ $item->kontak_penemu }}</li>
-                    <li class="list-group-item"><strong>Deskripsi:</strong> {{ $item->deskripsi }}</li>
-                </ul>
-            </div>
+        {{-- Foto --}}
+        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px; overflow:hidden;">
+            @if($item->image)
+                <img src="{{ asset('storage/' . $item->image) }}" class="w-100 h-100" style="object-fit:cover;">
+            @else
+                <div class="text-center text-secondary">
+                    <i class="bi bi-image" style="font-size:2.5rem;"></i><br>
+                    <small>Tidak ada foto</small>
+                </div>
+            @endif
+        </div>
 
-            <div class="mt-3 d-flex gap-2">
-                <a href="{{ route('found-items.index') }}" class="btn btn-secondary">Kembali</a>
-                <a href="{{ route('found-items.edit', $item->id) }}" class="btn btn-warning">Ubah</a>
-            </div>
+        {{-- Detail --}}
+        <div class="card-body p-3">
+            <ul class="list-group list-group-flush mb-3">
+                <li class="list-group-item d-flex justify-content-between"><strong>Nama barang</strong> <span>{{ $item->nama_barang }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Kategori</strong> <span>{{ $item->kategori ?? '-' }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Lokasi</strong> <span>{{ $item->lokasi_penemuan ?? '-' }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Tanggal</strong> <span>{{ $item->tanggal_ditemukan ?? '-' }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Waktu</strong> <span>{{ $item->waktu_ditemukan ?? '-' }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Penemu</strong> <span>{{ $item->nama_penemu ?? '-' }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Kontak</strong> <span>{{ $item->kontak_penemu ?? '-' }}</span></li>
+                <li class="list-group-item d-flex justify-content-between"><strong>Deskripsi</strong> <span>{{ $item->deskripsi ?? '-' }}</span></li>
+            </ul>
+
+            <a href="{{ route('found-items.index') }}" class="btn btn-primary w-100">Kembali ke Daftar</a>
+            <a href="{{ route('found-items.edit', $item->id) }}" class="btn btn-warning w-100">Ubah</a>
         </div>
     </div>
 </div>

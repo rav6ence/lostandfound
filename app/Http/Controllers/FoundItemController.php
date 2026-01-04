@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FoundItem;
 use Illuminate\Http\Request;
-use App\Models\Location;
+use Illuminate\Support\Facades\Storage;
 
 class FoundItemController extends Controller
 {
@@ -16,8 +16,7 @@ class FoundItemController extends Controller
 
     public function create()
     {
-        $locations = Location::all();
-        return view('found_items.create', compact('locations'));
+        return view('found_items.create');
     }
 
     public function store(Request $request)
@@ -44,11 +43,9 @@ class FoundItemController extends Controller
 
         FoundItem::create($data);
 
-        return redirect()
-            ->route('found-items.index')
-            ->with('success', 'Barang ditemukan berhasil disimpan.');
+        return redirect()->route('found-items.index')
+            ->with('success', 'Barang ditemukan berhasil disimpan');
     }
-
 
     public function show($id)
     {
@@ -64,6 +61,8 @@ class FoundItemController extends Controller
 
     public function update(Request $request, $id)
     {
+        $item = FoundItem::findOrFail($id);
+
         $data = $request->validate([
             'nama_barang'       => 'required|string|max:255',
             'kategori'          => 'required|string|max:255',
@@ -80,25 +79,28 @@ class FoundItemController extends Controller
             'image'             => 'nullable|image|max:2048',
         ]);
 
-        $item = FoundItem::findOrFail($id);
-
         if ($request->hasFile('image')) {
+            if ($item->image) {
+                Storage::disk('public')->delete($item->image);
+            }
             $data['image'] = $request->file('image')->store('found-items', 'public');
         }
 
         $item->update($data);
 
-        return redirect()
-            ->route('found-items.index')
-            ->with('success', 'Data barang berhasil diupdate.');
+        return redirect()->route('found-items.index')->with('success', 'Data berhasil diupdate');
     }
 
     public function destroy($id)
     {
-        FoundItem::findOrFail($id)->delete();
+        $item = FoundItem::findOrFail($id);
 
-        return redirect()
-            ->route('found-items.index')
-            ->with('success', 'Data barang berhasil dihapus.');
+        if ($item->image) {
+            Storage::disk('public')->delete($item->image);
+        }
+
+        $item->delete();
+
+        return redirect()->route('found-items.index')->with('success', 'Data berhasil dihapus');
     }
 }
