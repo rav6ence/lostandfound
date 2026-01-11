@@ -3,24 +3,52 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LostItemController;
 use App\Http\Controllers\FoundItemController;
-use App\Http\Controllers\LocationController;
+use App\Http\Controllers\FormFoundItemController;
 use App\Http\Controllers\ClaimController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
-    return redirect()->route('lost-items.index');
+    return redirect('/found-items');
 });
 
-Route::resource('lost-items', LostItemController::class);
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'doLogin']);
 
-Route::resource('found-items', FoundItemController::class);
+    Route::get('/register', [AuthController::class, 'register'])->name('register');
+    Route::post('/register', [AuthController::class, 'doRegister']);
+});
 
-Route::resource('locations', LocationController::class);
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
-// CLAIM — MANUAL CREATE (PAKAI PARAMETER)
-Route::get(
-    '/claim-items/create/{foundItem}',
-    [ClaimController::class, 'create']
-)->name('claim-items.create');
+Route::middleware('auth')->group(function () {
 
-// CLAIM — STORE SAJA VIA RESOURCE
-Route::resource('claim-items', ClaimController::class)->only(['store']);
+    Route::resource('lost-items', LostItemController::class);
+    Route::get('found-items/print', [FoundItemController::class, 'print'])->name('found-items.print');
+    Route::resource('found-items', FoundItemController::class)->except(['create', 'store']);
+
+    // Form Found Items (create & store)
+    Route::get('/form-found-items/create', [FormFoundItemController::class, 'create'])->name('form-found-items.create');
+    Route::post('/form-found-items', [FormFoundItemController::class, 'store'])->name('form-found-items.store');
+
+    Route::get(
+        '/claim-items/create/{foundItem}',
+        [ClaimController::class, 'create']
+    )->name('claim-items.create');
+
+    Route::get(
+        '/claim-items/create-for-lost/{lostItem}',
+        [ClaimController::class, 'createForLost']
+    )->name('claim-items.create-for-lost');
+
+    Route::post(
+        '/claim-items',
+        [ClaimController::class, 'store']
+    )->name('claim-items.store');
+
+    Route::get('/riwayat', [HistoryController::class, 'index'])
+        ->name('riwayat.index');
+});

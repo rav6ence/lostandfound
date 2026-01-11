@@ -20,8 +20,7 @@
                     <input type="file" name="image" class="form-control mb-2">
 
                     <button type="button" class="btn btn-secondary btn-sm"
-                            onclick="document.querySelector('input[name=image]').value = ''">
-                        Hapus Gambar
+                            onclick="document.querySelector('input[name=image]').value = ''">Hapus Gambar
                     </button>
                 </div>
 

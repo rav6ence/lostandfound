@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FoundItem extends Model
 {
+    use HasFactory;
     protected $table = 'found_items';
 
     protected $fillable = [
@@ -22,10 +24,20 @@ class FoundItem extends Model
         'kontak',
         'deskripsi',
         'image',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected $casts = [
         'tanggal_ditemukan' => 'date',
     ];
-}
 
+    public function claims()
+    {
+        return $this->hasMany(Claim::class);
+    }
+}

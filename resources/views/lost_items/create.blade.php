@@ -9,36 +9,33 @@
 
     <div class="bg-white p-4 rounded shadow-sm">
 
-        {{-- FORM CREATE / UPDATE --}}
         <form method="POST"
-              action="{{ isset($item) ? route('lost-items.update', $item->id) : route('lost-items.store') }}"
+              action="{{ isset($item) ? route('lost-items.update', $item) : route('lost-items.store') }}"
               enctype="multipart/form-data">
             @csrf
-            @if(isset($item))
+            @isset($item)
                 @method('PUT')
-            @endif
+            @endisset
 
             <div class="row">
+
                 {{-- IMAGE --}}
                 <div class="col-md-4">
                     <div class="border bg-light mb-2" style="height:250px;">
                         <img id="imagePreview"
-                             src="{{ isset($item) && $item->image
-                                    ? asset('storage/'.$item->image)
-                                    : 'https://via.placeholder.com/400x250?text=Preview' }}"
+                             src="{{ isset($item) && $item->image? asset('storage/'.$item->image): 'https://via.placeholder.com/400x250?text=Preview' }}"
                              class="w-100 h-100"
                              style="object-fit:cover;">
                     </div>
-
                     <input type="file"
                            name="image"
                            id="imageInput"
-                           class="form-control mb-2">
+                           class="form-control mb-2"
+                           accept="image/*">
 
                     <button type="button"
                             class="btn btn-outline-secondary w-100"
-                            onclick="resetImage()">
-                        Hapus Gambar
+                            onclick="resetImage()"> Hapus Gambar
                     </button>
                 </div>
 
@@ -48,9 +45,9 @@
                         <div class="col-md-6">
                             <label class="form-label">Nama Barang</label>
                             <input type="text"
-                                   name="nama_pemilik"
+                                   name="nama_barang"
                                    class="form-control"
-                                   value="{{ $item->nama_barang ?? '' }}"
+                                   value="{{ old('nama_barang', $item->nama_barang ?? '') }}"
                                    required>
                         </div>
 
@@ -59,7 +56,7 @@
                             <input type="date"
                                    name="tanggal_hilang"
                                    class="form-control"
-                                   value="{{ $item->tanggal_hilang ?? '' }}"
+                                   value="{{ old('tanggal_hilang', optional($item->tanggal_hilang ?? null)->format('Y-m-d')) }}"
                                    required>
                         </div>
                     </div>
@@ -70,7 +67,7 @@
                             <input type="text"
                                    name="kategori"
                                    class="form-control"
-                                   value="{{ $item->kategori ?? '' }}"
+                                   value="{{ old('kategori', $item->kategori ?? '') }}"
                                    required>
                         </div>
 
@@ -79,7 +76,7 @@
                             <input type="text"
                                    name="kontak"
                                    class="form-control"
-                                   value="{{ $item->kontak ?? '' }}"
+                                   value="{{ old('kontak', $item->kontak ?? '') }}"
                                    required>
                         </div>
                     </div>
@@ -89,7 +86,7 @@
                         <input type="text"
                                name="lokasi_terakhir"
                                class="form-control"
-                               value="{{ $item->lokasi_terakhir ?? '' }}"
+                               value="{{ old('lokasi_terakhir', $item->lokasi_terakhir ?? '') }}"
                                required>
                     </div>
                 </div>
@@ -101,59 +98,54 @@
                 <textarea name="deskripsi"
                           class="form-control"
                           rows="4"
-                          required>{{ $item->deskripsi ?? '' }}</textarea>
+                          required>{{ old('deskripsi', $item->deskripsi ?? '') }}</textarea>
             </div>
 
-            {{-- BUTTON CRUD --}}
+            {{-- BUTTON --}}
             <div class="mt-4 d-flex gap-2">
-
-                {{-- SIMPAN / UBAH --}}
-                <button type="submit"
-                        class="btn {{ isset($item) ? 'btn-warning' : 'btn-success' }}">
+                <button type="submit" class="btn {{ isset($item) ? 'btn-warning' : 'btn-success' }}">
                     {{ isset($item) ? 'Ubah' : 'Simpan' }}
                 </button>
 
-                {{-- HAPUS --}}
-                @if(isset($item))
-                    <form action="{{ route('lost-items.destroy', $item->id) }}"
-                          method="POST"
-                          onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger">
-                            Hapus
-                        </button>
-                    </form>
-                @endif
-
-                <a href="{{ route('lost-items.index') }}" class="btn btn-secondary">
-                    Batal
-                </a>
+                <a href="{{ route('lost-items.index') }}" class="btn btn-secondary">Batal</a>
             </div>
-
             <input type="hidden" name="status_id" value="{{ $item->status_id ?? 1 }}">
         </form>
+
+        {{-- DELETE --}}
+        @isset($item)
+        <form action="{{ route('lost-items.destroy', $item) }}"
+              method="POST"
+              class="mt-3"
+              onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+            @csrf
+            @method('DELETE')
+            <button class="btn btn-danger">Hapus</button>
+        </form>
+        @endisset
 
     </div>
 </div>
 
-{{-- IMAGE PREVIEW SCRIPT --}}
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+
+    imageInput?.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => imagePreview.src = e.target.result;
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
 function resetImage() {
     document.getElementById('imageInput').value = '';
     document.getElementById('imagePreview').src =
         'https://via.placeholder.com/400x250?text=Preview';
 }
-
-document.getElementById('imageInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            document.getElementById('imagePreview').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
 </script>
 @endsection

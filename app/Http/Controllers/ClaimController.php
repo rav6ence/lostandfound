@@ -4,38 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\Claim;
 use App\Models\FoundItem;
+use App\Models\LostItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 
 class ClaimController extends Controller
 {
-    // 2. Form klaim barang
     public function create($foundItemId)
     {
         $foundItem = FoundItem::findOrFail($foundItemId);
-        return view('claim_items.create', compact('foundItem'));
+        $myLostItems = LostItem::where('user_id', Auth::id())->latest()->get();
+        return view('claim_items.create', compact('foundItem', 'myLostItems'));
     }
 
-    // Simpan klaim
+    public function createForLost($lostItemId)
+    {
+        $lostItem = LostItem::findOrFail($lostItemId);
+        return view('claim_items.create', compact('lostItem'));
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
-            'found_item_id'   => 'required|exists:found_items,id',
+            'found_item_id'   => 'nullable|exists:found_items,id|required_without:lost_item_id',
+            'lost_item_id'    => 'nullable|exists:lost_items,id|required_without:found_item_id',
             'nama_pemilik'    => 'required|string|max:255',
             'kontak_pemilik'  => 'required|string|max:255',
             'lokasi_terakhir' => 'required|string|max:255',
             'bukti'           => 'required|file|max:2048',
         ]);
 
+        $data['user_id'] = Auth::id();
+        $data['status'] = 'diklaim';
+
         if ($request->hasFile('bukti')) {
             $data['bukti'] = $request->file('bukti')->store('claim-bukti', 'public');
         }
 
         Claim::create($data);
-        
-        FoundItem::where('id', $data['found_item_id'])->delete();
 
         return redirect()
-            ->route('found-items.index')
+            ->route('riwayat.index')
             ->with('success', 'Claim berhasil dikirim.');
     }
 }
