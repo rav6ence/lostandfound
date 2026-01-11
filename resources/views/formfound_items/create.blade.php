@@ -70,14 +70,6 @@
                                    value="{{ old('waktu_ditemukan') }}" required>
                         </div>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Lokasi Umum</label>
-                            <input type="text" name="lokasi" class="form-control"
-                                   value="{{ old('lokasi') }}" required>
-                        </div>
-
                         <div class="col-md-6">
                             <label class="form-label">Lokasi Penemuan</label>
                             <input type="text" name="lokasi_penemuan" class="form-control"
@@ -90,36 +82,31 @@
                         <textarea name="kronologi" class="form-control" rows="3">{{ old('kronologi') }}</textarea>
                     </div>
                 </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Nama Penemu</label>
+                        <input type="text" name="nama_penemu" class="form-control"
+                               value="{{ old('nama_penemu') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Kontak Penemu</label>
+                        <input type="text" name="kontak_penemu" class="form-control"
+                               value="{{ old('kontak_penemu') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Alamat Penemu</label>
+                        <input type="text" name="alamat_penemu" class="form-control"
+                               value="{{ old('alamat_penemu') }}" required>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="form-label">Deskripsi Barang</label>
+                    <textarea name="deskripsi" class="form-control" rows="4" required>{{ old('deskripsi') }}</textarea>
+                </div>
             </div>
 
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <label class="form-label">Nama Penemu</label>
-                    <input type="text" name="nama_penemu" class="form-control"
-                           value="{{ old('nama_penemu') }}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Kontak Penemu</label>
-                    <input type="text" name="kontak_penemu" class="form-control"
-                           value="{{ old('kontak_penemu') }}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Alamat Penemu</label>
-                    <input type="text" name="alamat_penemu" class="form-control"
-                           value="{{ old('alamat_penemu') }}" required>
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <label class="form-label">Kontak yang Bisa Dihubungi</label>
-                <input type="text" name="kontak" class="form-control"
-                       value="{{ old('kontak') }}" required>
-            </div>
-
-            <div class="mt-4">
-                <label class="form-label">Deskripsi Barang</label>
-                <textarea name="deskripsi" class="form-control" rows="4" required>{{ old('deskripsi') }}</textarea>
-            </div>
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-success">

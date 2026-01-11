@@ -49,6 +49,11 @@ Route::middleware('auth')->group(function () {
         [ClaimController::class, 'store']
     )->name('claim-items.store');
 
+    // Edit, Update, Destroy Claim
+    Route::get('/claim-items/{claim}/edit', [ClaimController::class, 'edit'])->name('claim-items.edit');
+    Route::put('/claim-items/{claim}', [ClaimController::class, 'update'])->name('claim-items.update');
+    Route::delete('/claim-items/{claim}', [ClaimController::class, 'destroy'])->name('claim-items.destroy');
+
     Route::get('/riwayat', [HistoryController::class, 'index'])
         ->name('riwayat.index');
 });

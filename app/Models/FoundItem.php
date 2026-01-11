@@ -13,7 +13,6 @@ class FoundItem extends Model
     protected $fillable = [
         'nama_barang',
         'kategori',
-        'lokasi',
         'tanggal_ditemukan',
         'waktu_ditemukan',
         'lokasi_penemuan',
@@ -21,10 +20,11 @@ class FoundItem extends Model
         'nama_penemu',
         'kontak_penemu',
         'alamat_penemu',
-        'kontak',
         'deskripsi',
         'image',
         'user_id',
+        'kontak',
+        'lokasi',
     ];
 
     public function user()

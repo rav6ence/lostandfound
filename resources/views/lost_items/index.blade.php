@@ -1,4 +1,4 @@
-\@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container-fluid p-4" style="min-height:100vh;">
@@ -45,15 +45,18 @@
                                 @endauth
 
                                 <a href="{{ route('lost-items.show', $item) }}" class="btn btn-info btn-sm">Detail</a>
-                                <a href="{{ route('lost-items.edit', $item) }}" class="btn btn-warning btn-sm">Ubah</a>
+                                
+                                @can('admin-only')
+                                    <a href="{{ route('lost-items.edit', $item) }}" class="btn btn-warning btn-sm">Ubah</a>
 
-                                <form action="{{ route('lost-items.destroy', $item) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
+                                    <form action="{{ route('lost-items.destroy', $item) }}"
+                                          method="POST"
+                                          onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>

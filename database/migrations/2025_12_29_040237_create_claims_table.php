@@ -9,7 +9,8 @@ return new class extends Migration {
     {
         Schema::create('claims', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('found_item_id')->constrained()->onDelete('cascade');
+            $table->foreignId('found_item_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('lost_item_id')->nullable()->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('user_id')->index();
             $table->string('nama_pemilik');
             $table->string('kontak_pemilik');

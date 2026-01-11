@@ -103,7 +103,7 @@ class LostFoundController extends Controller
     public function indexFoundItems()
     {
         $items = FoundItem::latest()->get();
-        
+
         return response()->json([
             'message' => 'List Data Found Items',
             'data' => FoundItemResource::collection($items)
@@ -155,7 +155,7 @@ class LostFoundController extends Controller
 
         $myLostItems = LostItem::where('user_id', $userId)->latest()->get();
 
-        $myClaims = Claim::where('user_id', $userId)->with('foundItem')->latest()->get();
+        $myClaims = Claim::where('user_id', $userId)->with(['foundItem', 'lostItem'])->latest()->get();
 
         return response()->json([
             'message' => 'Riwayat Aktivitas Anda',
