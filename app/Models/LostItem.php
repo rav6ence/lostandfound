@@ -9,7 +9,6 @@ class LostItem extends Model
 {
     use HasFactory;
 
-    // Sesuai tabel lost_items
     protected $fillable = [
         'user_id',
         'nama_barang',
@@ -22,13 +21,11 @@ class LostItem extends Model
         'image'
     ];
 
-    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
     
-    // Relasi ke Status (Optional, jika ada model Status)
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');

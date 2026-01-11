@@ -13,7 +13,6 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        // Validasi sesuai Modul 5 [cite: 910]
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users|max:255',
@@ -27,7 +26,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Create User [cite: 921]
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -47,7 +45,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Logika Login Modul 5 [cite: 941]
+
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Invalid login credentials'
@@ -68,7 +66,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Logika Logout Modul 5 [cite: 983]
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Successfully logged out'], 200);
     }

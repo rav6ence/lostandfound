@@ -21,7 +21,7 @@ class FoundItemResource extends JsonResource
             'nama_penemu' => $this->nama_penemu,
             'kontak_penemu' => $this->kontak_penemu,
             'alamat_penemu' => $this->alamat_penemu,
-            'kontak' => $this->kontak, // Kontak yang bisa dihubungi
+            'kontak' => $this->kontak,
             'deskripsi' => $this->deskripsi,
             'image_url' => $this->image ? url('storage/' . $this->image) : null,
             'created_at' => $this->created_at,

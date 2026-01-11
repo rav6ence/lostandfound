@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class LostFoundController extends Controller
 {
-    // ==========================================
-    // 1. LAPOR BARANG HILANG (POST)
-    // ==========================================
     public function storeLostItem(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -55,9 +52,6 @@ class LostFoundController extends Controller
         ], 201);
     }
 
-    // ==========================================
-    // 2. LAPOR BARANG DITEMUKAN (POST)
-    // ==========================================
     public function storeFoundItem(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -106,9 +100,6 @@ class LostFoundController extends Controller
         ], 201);
     }
 
-    // ==========================================
-    // 3. LIST SEMUA BARANG TEMUAN (GET)
-    // ==========================================
     public function indexFoundItems()
     {
         $items = FoundItem::latest()->get();
@@ -119,9 +110,6 @@ class LostFoundController extends Controller
         ], 200);
     }
 
-    // ==========================================
-    // 4. KLAIM BARANG TEMUAN (POST)
-    // ==========================================
     public function claimItem(Request $request, $found_item_id)
     {
         $foundItem = FoundItem::find($found_item_id);
@@ -161,17 +149,12 @@ class LostFoundController extends Controller
         ], 201);
     }
 
-    // ==========================================
-    // 5. HISTORY SAYA (GET)
-    // ==========================================
     public function history(Request $request)
     {
         $userId = $request->user()->id;
 
-        // Barang yang saya lapor hilang
         $myLostItems = LostItem::where('user_id', $userId)->latest()->get();
 
-        // Barang yang saya klaim
         $myClaims = Claim::where('user_id', $userId)->with('foundItem')->latest()->get();
 
         return response()->json([
