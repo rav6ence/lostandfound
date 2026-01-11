@@ -17,15 +17,13 @@ class FormFoundItemController extends Controller
         $data = $request->validate([
             'nama_barang' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
-            'lokasi' => 'required|string|max:255',
             'tanggal_ditemukan' => 'required|date',
             'waktu_ditemukan' => 'required',
             'lokasi_penemuan' => 'required|string|max:255',
             'kronologi' => 'nullable|string',
             'nama_penemu' => 'required|string|max:255',
-            'kontak_penemu' => 'required|string|max:255',
+            'kontak_penemu' => 'required|numeric',
             'alamat_penemu' => 'required|string|max:255',
-            'kontak' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -34,6 +32,8 @@ class FormFoundItemController extends Controller
             $data['image'] = $request->file('image')->store('found-items', 'public');
         }
 
+        $data['kontak'] = $data['kontak_penemu'];
+        $data['lokasi'] = $data['lokasi_penemuan'];
         FoundItem::create($data);
 
         return redirect()->route('found-items.index')

@@ -19,23 +19,33 @@
             </a>
 
             @auth
-            <div class="ms-auto d-flex align-items-center gap-2">
-                <a href="{{ route('lost-items.index') }}" class="btn btn-outline-light btn-sm">
-                    Barang Hilang
-                </a>
-                <a href="{{ route('found-items.index') }}" class="btn btn-outline-light btn-sm">
-                    Barang Ditemukan
-                </a>
-                <a href="{{ route('riwayat.index') }}" class="btn btn-outline-light btn-sm">
-                    Riwayat
-                </a>
-                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                    @csrf
-                    <button class="btn btn-danger btn-sm" type="submit">
-                        Logout
-                    </button>
-                </form>
-            </div>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <a href="{{ route('lost-items.index') }}" class="btn btn-outline-light btn-sm">
+                        Barang Hilang
+                    </a>
+                    <a href="{{ route('found-items.index') }}" class="btn btn-outline-light btn-sm">
+                        Barang Ditemukan
+                    </a>
+                    <a href="{{ route('riwayat.index') }}" class="btn btn-outline-light btn-sm">
+                        Riwayat
+                    </a>
+
+                    <div class="text-white mx-2 d-flex align-items-center gap-1">
+                        <span>{{ Auth::user()->name }}</span>
+                        @if(Auth::user()->isAdmin())
+                            <span class="badge bg-warning text-dark text-uppercase">ADMIN</span>
+                        @else
+                            <span class="badge bg-secondary text-uppercase">USER</span>
+                        @endif
+                    </div>
+
+                    <form action="{{ route('logout') }}" method="POST" class="m-0">
+                        @csrf
+                        <button class="btn btn-danger btn-sm" type="submit">
+                            Logout
+                        </button>
+                    </form>
+                </div>
             @endauth
 
         </div>

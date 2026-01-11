@@ -79,6 +79,7 @@ class LostFoundController extends Controller
         }
 
         $foundItem = FoundItem::create([
+            'user_id' => $request->user()->id,
             'nama_barang' => $request->nama_barang,
             'kategori' => $request->kategori,
             'lokasi' => $request->lokasi,
@@ -103,7 +104,7 @@ class LostFoundController extends Controller
     public function indexFoundItems()
     {
         $items = FoundItem::latest()->get();
-        
+
         return response()->json([
             'message' => 'List Data Found Items',
             'data' => FoundItemResource::collection($items)
@@ -155,7 +156,7 @@ class LostFoundController extends Controller
 
         $myLostItems = LostItem::where('user_id', $userId)->latest()->get();
 
-        $myClaims = Claim::where('user_id', $userId)->with('foundItem')->latest()->get();
+        $myClaims = Claim::where('user_id', $userId)->with(['foundItem', 'lostItem'])->latest()->get();
 
         return response()->json([
             'message' => 'Riwayat Aktivitas Anda',
@@ -163,6 +164,140 @@ class LostFoundController extends Controller
                 'laporan_kehilangan' => LostItemResource::collection($myLostItems),
                 'riwayat_klaim' => $myClaims
             ]
+        ], 200);
+    }
+
+    public function updateClaim(Request $request, $id)
+    {
+        $claim = Claim::find($id);
+
+        if (!$claim) {
+            return response()->json(['message' => 'Claim tidak ditemukan'], 404);
+        }
+
+        if ($claim->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nama_pemilik' => 'required|string',
+            'kontak_pemilik' => 'required|string',
+            'lokasi_terakhir' => 'required|string',
+            'bukti' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $request->only(['nama_pemilik', 'kontak_pemilik', 'lokasi_terakhir']);
+
+        if ($request->hasFile('bukti')) {
+            if ($claim->bukti) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($claim->bukti);
+            }
+            $data['bukti'] = $request->file('bukti')->store('claims_evidence', 'public');
+        }
+
+        $claim->update($data);
+
+        return response()->json([
+            'message' => 'Claim berhasil diperbarui.',
+            'data' => $claim
+        ], 200);
+    }
+
+    public function deleteClaim(Request $request, $id)
+    {
+        $claim = Claim::find($id);
+
+        if (!$claim) {
+            return response()->json(['message' => 'Claim tidak ditemukan'], 404);
+        }
+
+        if ($claim->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        if ($claim->bukti) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($claim->bukti);
+        }
+
+        $claim->delete();
+
+        return response()->json([
+            'message' => 'Claim berhasil dihapus.'
+        ], 200);
+    }
+
+    public function updateFoundItem(Request $request, $id)
+    {
+        $foundItem = FoundItem::find($id);
+
+        if (!$foundItem) {
+            return response()->json(['message' => 'Found Item tidak ditemukan'], 404);
+        }
+
+        if ($foundItem->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nama_barang' => 'required|string|max:255',
+            'kategori' => 'required|string|max:255',
+            'lokasi' => 'required|string|max:255',
+            'tanggal_ditemukan' => 'required|date',
+            'waktu_ditemukan' => 'required',
+            'lokasi_penemuan' => 'required|string|max:255',
+            'nama_penemu' => 'required|string|max:255', // Still keeping manual name just in case
+            'kontak_penemu' => 'required|string|max:255',
+            'alamat_penemu' => 'required|string|max:255',
+            'kontak' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $request->except(['image', 'user_id']); // Prevent user_id change
+
+        if ($request->hasFile('image')) {
+            if ($foundItem->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($foundItem->image);
+            }
+            $data['image'] = $request->file('image')->store('found_items', 'public');
+        }
+
+        $foundItem->update($data);
+
+        return response()->json([
+            'message' => 'Found Item berhasil diperbarui',
+            'data' => new FoundItemResource($foundItem)
+        ], 200);
+    }
+
+    public function deleteFoundItem(Request $request, $id)
+    {
+        $foundItem = FoundItem::find($id);
+
+        if (!$foundItem) {
+            return response()->json(['message' => 'Found Item tidak ditemukan'], 404);
+        }
+
+        if ($foundItem->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        if ($foundItem->image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($foundItem->image);
+        }
+
+        $foundItem->delete();
+
+        return response()->json([
+            'message' => 'Found Item berhasil dihapus'
         ], 200);
     }
 }
