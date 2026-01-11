@@ -13,7 +13,13 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // Fallback: try reading raw JSON if auto-parsing failed (e.g. missing Content-Type header)
+        $data = $request->all();
+        if (empty($data)) {
+            $data = json_decode($request->getContent(), true) ?? [];
+        }
+
+        $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users|max:255',
             'password' => 'required|string|min:8'
@@ -27,9 +33,9 @@ class AuthController extends Controller
         }
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password'])
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -45,6 +51,11 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $data = $request->all();
+        if (empty($data)) {
+            $data = json_decode($request->getContent(), true) ?? [];
+        }
+        $request->merge($data); // Merge back to request so 'only' works
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([

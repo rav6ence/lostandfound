@@ -13,16 +13,22 @@ Route::get('/found-items', [LostFoundController::class, 'indexFoundItems']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
     Route::post('/lost-items', [LostFoundController::class, 'storeLostItem']);
-    
+
     Route::post('/found-items', [LostFoundController::class, 'storeFoundItem']);
+    Route::put('/found-items/{id}', [LostFoundController::class, 'updateFoundItem']);
+    Route::delete('/found-items/{id}', [LostFoundController::class, 'deleteFoundItem']);
 
     Route::post('/found-items/{id}/claim', [LostFoundController::class, 'claimItem']);
-    
+
+    // Update & Delete Claim (API)
+    Route::put('/claim-items/{id}', [LostFoundController::class, 'updateClaim']);
+    Route::delete('/claim-items/{id}', [LostFoundController::class, 'deleteClaim']);
+
     Route::get('/history', [LostFoundController::class, 'history']);
 });
